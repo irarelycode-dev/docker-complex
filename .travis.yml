@@ -11,7 +11,7 @@ after_success:
   - docker build -t irarelycode/multinginx ./nginx
   - docker build -t irarelycode/multiworker ./worker
   # login into docker hub
-  - echo "$DOCKER_PASSWORD" docker login -u "$DOCKER_USERNAME" --password-stdin
+  - echo "$DOCKER_PASSWORD" |  docker login -u "$DOCKER_USERNAME" --password-stdin
   # take those images and push it to docker hub
   - docker push irarelycode/multiweb
   - docker push irarelycode/multiserver
