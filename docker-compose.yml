@@ -1,0 +1,49 @@
+version: "3"
+services:
+  mongo:
+    image: "mongo"
+    ports:
+      - "27018:27017"
+  redis:
+    image: "redis"
+  api:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+    volumes:
+      - /app/node_modules
+      - ./server:/app
+    # depends_on:
+    #   - mongo
+    # environment:
+    #   - REDIS_HOST=redis
+    #   - REDIS_PORT=6379
+    #   - PGUSER=postgres
+    #   - PGHOST=postgres
+    #   - PGDATABASE=postgres
+    #   - PGPASSWORD=postgres_password
+    #   - PGPORT=5432
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile.dev
+    volumes:
+      - /app/node_modules
+      - ./web:/app
+  worker:
+    build:
+      context: ./worker
+      dockerfile: Dockerfile.dev
+    volumes:
+      - /app/node_modules
+      - ./worker:/app
+  nginx:
+    restart: always
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3050:80"
+    depends_on:
+      - api
+      - web

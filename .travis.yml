@@ -1,0 +1,19 @@
+sudo: required
+services:
+  - docker
+before_install:
+  - docker build -t irarelycode/react-test -f ./web/Dockerfile.dev ./web
+script:
+  - docker run irarelycode/react-test npm test -- --coverage
+after_success:
+  - docker build -t irarelycode/multiweb ./web
+  - docker build -t irarelycode/multiserver ./server
+  - docker build -t irarelycode/multinginx ./nginx
+  - docker build -t irarelycode/multiworker ./worker
+  # login into docker hub
+  - echo "$DOCKER_PASSWORD" docker login -u "$DOCKER_ID" --password-stdin
+  # take those images and push it to docker hub
+  - docker push irarelycode/multiweb
+  - docker push irarelycode/multiserver
+  - docker push irarelycode/multinginx
+  - docker push irarelycode/multiworker
